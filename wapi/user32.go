@@ -1547,6 +1547,7 @@ const (
 )
 
 // 系统菜单命令值常量
+
 const (
 	SC_SIZE               = 0xF000 // 调整窗口大小
 	SC_MOVE               = 0xF010 // 移动窗口
@@ -1576,6 +1577,7 @@ const (
 )
 
 // WM_SIZE 消息的 wParam 值
+
 const (
 	SIZE_RESTORED  = iota // 0: 窗口恢复（正常大小）
 	SIZE_MINIMIZED        // 1: 窗口最小化（任务栏）
@@ -1585,6 +1587,7 @@ const (
 )
 
 // WM_ACTIVATE 消息的窗口激活状态值（对应 wParam）
+
 const (
 	WA_INACTIVE    = 0 // 窗口被停用（非活动状态）
 	WA_ACTIVE      = 1 // 窗口被激活（例如通过键盘切换）
@@ -1592,6 +1595,7 @@ const (
 )
 
 // WM_KEYUP, WM_KEYDOWN, WM_CHAR 消息的 lParam 高位标志（HIWORD）
+
 const (
 	KF_EXTENDED = 0x0100 // 扩展键（如右侧Alt/Ctrl/方向键）
 	KF_DLGMODE  = 0x0800 // 对话框激活状态下的按键
@@ -1602,6 +1606,7 @@ const (
 )
 
 // 低级键盘钩子标志 (KBDLLHOOKSTRUCT.flags)
+
 const (
 	LLKHF_EXTENDED          = 0x0001 // 扩展键标志 (如右Alt/Ctrl)
 	LLKHF_INJECTED          = 0x0010 // 事件由其他进程注入
