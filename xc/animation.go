@@ -510,13 +510,47 @@ func XAnima_DestroyObjectUI(hSequence int, duration float32) int {
 // flag: 当前忽略.
 type FunAnimation func(hAnimation int, flag int32)
 
+// 动画回调复用相关变量
+var (
+	animaCallbacks    = make(map[int]FunAnimation)
+	animaCallbackLock sync.Mutex
+	animaCallbackOnce sync.Once
+	animaCallbackPtr  uintptr
+)
+
+// animaCallbackShell 动画回调函数壳
+func animaCallbackShell(hAnimation int, flag int32) int {
+	animaCallbackLock.Lock()
+	defer animaCallbackLock.Unlock()
+	callback, ok := animaCallbacks[hAnimation]
+	if ok {
+		callback(hAnimation, flag)
+	}
+	return 0
+}
+
 // 动画_置回调.
 //
 // hAnimationEx: 动画序列或动画组句柄.
 //
 // callback: 回调函数.
 func XAnima_SetCallBack(hAnimationEx int, callback FunAnimation) {
-	xAnima_SetCallBack.Call(uintptr(hAnimationEx), syscall.NewCallback(callback))
+	animaCallbackOnce.Do(func() {
+		animaCallbackPtr = syscall.NewCallback(animaCallbackShell)
+	})
+	animaCallbackLock.Lock()
+	animaCallbacks[hAnimationEx] = callback
+	xAnima_SetCallBack.Call(uintptr(hAnimationEx), animaCallbackPtr)
+	animaCallbackLock.Unlock()
+}
+
+// 动画_移除回调.
+//
+// hAnimationEx: 动画序列或动画组句柄.
+func XAnima_RemoveCallBack(hAnimationEx int) {
+	animaCallbackLock.Lock()
+	delete(animaCallbacks, hAnimationEx)
+	animaCallbackLock.Unlock()
 }
 
 // 动画_置用户数据.
@@ -644,10 +678,11 @@ func animaItemCallbackShell(hAnimation int, posBits uint32) int {
 //
 // callback: 回调函数.
 func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
+	cbPtr := getAnimaItemCallbackPtr()
 	animaItemCallbackLock.Lock()
-	defer animaItemCallbackLock.Unlock()
 	animaItemCallbacks[hAnimationItem] = callback
-	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), getAnimaItemCallbackPtr())
+	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), cbPtr)
+	animaItemCallbackLock.Unlock()
 }
 
 // 动画项_移除回调.
@@ -655,6 +690,6 @@ func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
 // hAnimationItem: 动画项句柄.
 func XAnimaItem_RemoveCallback(hAnimationItem int) {
 	animaItemCallbackLock.Lock()
-	defer animaItemCallbackLock.Unlock()
 	delete(animaItemCallbacks, hAnimationItem)
+	animaItemCallbackLock.Unlock()
 }

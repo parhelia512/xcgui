@@ -53,6 +53,12 @@ func (a *animaBase) SetCallBack(callback xc.FunAnimation) *animaBase {
 	return a
 }
 
+// 动画_移除回调.
+func (a *animaBase) RemoveCallBack() *animaBase {
+	xc.XAnima_RemoveCallBack(a.Handle)
+	return a
+}
+
 // 动画_置用户数据.
 //
 // nUserData: 用户数据.
