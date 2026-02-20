@@ -1,6 +1,7 @@
 package xc
 
 import (
+	"math"
 	"sync"
 	"syscall"
 
@@ -502,18 +503,6 @@ func XAnima_DestroyObjectUI(hSequence int, duration float32) int {
 	return int(r)
 }
 
-/*var (
-	funAnimationCallBackFunc func(hAnimation int, flag int32)            // 真实执行的
-	funAnimationCallBackPtr  = syscall.NewCallback(funAnimationCallBack) // 壳
-	rwm2                     sync.RWMutex
-)
-
-// 壳
-func funAnimationCallBack(hAnimation int, flag int32) uintptr {
-	funAnimationCallBackFunc(hAnimation, flag)
-	return uintptr(0)
-}*/
-
 // FunAnimation 动画回调.
 //
 // hAnimation: 动画序列或动画组句柄.
@@ -521,16 +510,13 @@ func funAnimationCallBack(hAnimation int, flag int32) uintptr {
 // flag: 当前忽略.
 type FunAnimation func(hAnimation int, flag int32)
 
-// 动画_置回调. TODO: 有问题用不了, 因为 syscall.NewCallback 创建不了没有返回值的回调函数指针.
+// 动画_置回调.
 //
 // hAnimationEx: 动画序列或动画组句柄.
 //
 // callback: 回调函数.
 func XAnima_SetCallBack(hAnimationEx int, callback FunAnimation) {
-	/*rwm2.Lock()
-	funAnimationCallBackFunc = callback*/
 	xAnima_SetCallBack.Call(uintptr(hAnimationEx), syscall.NewCallback(callback))
-	// rwm2.Unlock()
 }
 
 // 动画_置用户数据.
@@ -631,8 +617,8 @@ func XAnimaMove_SetFlag(hAnimationMove int, flags xcc.Animation_Move_) {
 //
 // hAnimation: 动画项句柄.
 //
-// pos: 当前进度(0.0f-1.0f), 需要计算得到 pos := math.Float32frombits.
-type FunAnimationItem func(hAnimation int, posBits uint32) int
+// pos: 当前进度(0 - 1.0).
+type FunAnimationItem func(hAnimation int, pos float32) int
 
 var (
 	animaItemCallbacks    = make(map[int]FunAnimationItem)
@@ -647,7 +633,7 @@ func animaItemCallbackShell(hAnimation int, posBits uint32) int {
 	defer animaItemCallbackLock.RUnlock()
 	callback, ok := animaItemCallbacks[hAnimation]
 	if ok {
-		return callback(hAnimation, posBits)
+		return callback(hAnimation, math.Float32frombits(posBits))
 	}
 	return 0
 }
