@@ -243,8 +243,12 @@ func (w *windowBase) GetHWND() uintptr {
 // 窗口_重绘.
 //
 // bImmediate: 是否立即重绘, 通常为 false 即可.
-func (w *windowBase) Redraw(bImmediate bool) *windowBase {
-	xc.XWnd_Redraw(w.Handle, bImmediate)
+func (w *windowBase) Redraw(bImmediate ...bool) *windowBase {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xc.XWnd_Redraw(w.Handle, b)
 	return w
 }
 
@@ -253,8 +257,12 @@ func (w *windowBase) Redraw(bImmediate bool) *windowBase {
 // pRect: 需要重绘的区域坐标.
 //
 // bImmediate: TRUE立即重绘, FALSE放入消息队列延迟重绘.
-func (w *windowBase) RedrawRect(pRect *xc.RECT, bImmediate bool) *windowBase {
-	xc.XWnd_RedrawRect(w.Handle, pRect, bImmediate)
+func (w *windowBase) RedrawRect(pRect *xc.RECT, bImmediate ...bool) *windowBase {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xc.XWnd_RedrawRect(w.Handle, pRect, b)
 	return w
 }
 

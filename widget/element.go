@@ -584,8 +584,12 @@ func (e *Element) Redraw(bImmediate ...bool) *Element {
 // pRect: 相对于元素客户区坐标.
 //
 // bImmediate: 是否立即重绘.
-func (e *Element) RedrawRect(pRect *xc.RECT, bImmediate bool) *Element {
-	xc.XEle_RedrawRect(e.Handle, pRect, bImmediate)
+func (e *Element) RedrawRect(pRect *xc.RECT, bImmediate ...bool) *Element {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xc.XEle_RedrawRect(e.Handle, pRect, b)
 	return e
 }
 

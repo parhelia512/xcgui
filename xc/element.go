@@ -629,8 +629,12 @@ func XEle_EnableTopmost(hEle int, bTopmost bool) bool {
 // hEle: 元素句柄.
 //
 // bImmediate: 是否立即重绘.
-func XEle_Redraw(hEle int, bImmediate bool) {
-	xEle_Redraw.Call(uintptr(hEle), common.BoolPtr(bImmediate))
+func XEle_Redraw(hEle int, bImmediate ...bool) {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xEle_Redraw.Call(uintptr(hEle), common.BoolPtr(b))
 }
 
 // 元素_重绘指定区域.
@@ -640,8 +644,12 @@ func XEle_Redraw(hEle int, bImmediate bool) {
 // pRect: 相对于元素客户区坐标.
 //
 // bImmediate: 是否立即重绘.
-func XEle_RedrawRect(hEle int, pRect *RECT, bImmediate bool) {
-	xEle_RedrawRect.Call(uintptr(hEle), uintptr(unsafe.Pointer(pRect)), common.BoolPtr(bImmediate))
+func XEle_RedrawRect(hEle int, pRect *RECT, bImmediate ...bool) {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xEle_RedrawRect.Call(uintptr(hEle), uintptr(unsafe.Pointer(pRect)), common.BoolPtr(b))
 }
 
 // 元素_取子对象数量, 获取子对象(UI元素和形状对象)数量, 只检测当前层子对象.

@@ -185,8 +185,12 @@ func XWnd_GetHWND(hWindow int) uintptr {
 // hWindow: 窗口资源句柄.
 //
 // bImmediate: 是否立即重绘, 默认为否.
-func XWnd_Redraw(hWindow int, bImmediate bool) {
-	xWnd_Redraw.Call(uintptr(hWindow), common.BoolPtr(bImmediate))
+func XWnd_Redraw(hWindow int, bImmediate ...bool) {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xWnd_Redraw.Call(uintptr(hWindow), common.BoolPtr(b))
 }
 
 // 窗口_重绘指定区域.
@@ -196,8 +200,12 @@ func XWnd_Redraw(hWindow int, bImmediate bool) {
 // pRect: 需要重绘的区域坐标.
 //
 // bImmediate: TRUE立即重绘, FALSE放入消息队列延迟重绘.
-func XWnd_RedrawRect(hWindow int, pRect *RECT, bImmediate bool) {
-	xWnd_RedrawRect.Call(uintptr(hWindow), uintptr(unsafe.Pointer(pRect)), common.BoolPtr(bImmediate))
+func XWnd_RedrawRect(hWindow int, pRect *RECT, bImmediate ...bool) {
+	b := false
+	if len(bImmediate) > 0 {
+		b = bImmediate[0]
+	}
+	xWnd_RedrawRect.Call(uintptr(hWindow), uintptr(unsafe.Pointer(pRect)), common.BoolPtr(b))
 }
 
 // 窗口_置坐标.
