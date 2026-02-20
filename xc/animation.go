@@ -573,15 +573,6 @@ func XAnima_Pause(hAnimationEx int) bool {
 	return r != 0
 }
 
-// 动画项_置回调. TODO: 有问题用不了, 因为 syscall.NewCallback 创建不了没有返回值的回调函数指针.
-//
-// hAnimationItem: 动画项句柄.
-//
-// callback: 回调函数.
-func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
-	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), syscall.NewCallback(callback))
-}
-
 // 动画项_置用户数据.
 //
 // hAnimationItem: 动画项句柄.
@@ -639,5 +630,5 @@ func XAnimaMove_SetFlag(hAnimationMove int, flags xcc.Animation_Move_) {
 //
 // hAnimation: 动画项句柄.
 //
-// flag: 当前进度(0.0f-1.0f).
-type FunAnimationItem func(hAnimation int, pos float32)
+// pos: 当前进度(0.0f-1.0f), 需要计算得到 pos := math.Float32frombits.
+type FunAnimationItem func(hAnimation int, posBits uint32) int
