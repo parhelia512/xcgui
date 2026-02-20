@@ -28,6 +28,12 @@ func (a *AnimaItem) SetCallback(callback xc.FunAnimationItem) *AnimaItem {
 	return a
 }
 
+// 动画项_移除回调.
+func (a *AnimaItem) RemoveCallback() *AnimaItem {
+	xc.XAnimaItem_RemoveCallback(a.Handle)
+	return a
+}
+
 // 动画项_置用户数据.
 //
 // nUserData: 用户数据.

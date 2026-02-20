@@ -663,3 +663,12 @@ func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
 	animaItemCallbacks[hAnimationItem] = callback
 	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), getAnimaItemCallbackPtr())
 }
+
+// 动画项_移除回调.
+//
+// hAnimationItem: 动画项句柄.
+func XAnimaItem_RemoveCallback(hAnimationItem int) {
+	animaItemCallbackLock.Lock()
+	defer animaItemCallbackLock.Unlock()
+	delete(animaItemCallbacks, hAnimationItem)
+}
