@@ -1,6 +1,7 @@
 package xc
 
 import (
+	"sync"
 	"syscall"
 
 	"github.com/twgh/xcgui/common"
@@ -632,3 +633,33 @@ func XAnimaMove_SetFlag(hAnimationMove int, flags xcc.Animation_Move_) {
 //
 // pos: 当前进度(0.0f-1.0f), 需要计算得到 pos := math.Float32frombits.
 type FunAnimationItem func(hAnimation int, posBits uint32) int
+
+var (
+	animaItemCallbacks    = make(map[int]FunAnimationItem)
+	animaItemCallbackLock sync.RWMutex
+	animaItemCallbackOnce sync.Once
+	animaItemCallbackPtr  uintptr
+)
+
+// animaItemCallbackShell 动画项回调函数壳
+func animaItemCallbackShell(hAnimation int, posBits uint32) int {
+	animaItemCallbackLock.RLock()
+	defer animaItemCallbackLock.RUnlock()
+	callback, ok := animaItemCallbacks[hAnimation]
+	if ok {
+		return callback(hAnimation, posBits)
+	}
+	return 0
+}
+
+// 动画项_置回调.
+//
+// hAnimationItem: 动画项句柄.
+//
+// callback: 回调函数.
+func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
+	animaItemCallbackLock.Lock()
+	defer animaItemCallbackLock.Unlock()
+	animaItemCallbacks[hAnimationItem] = callback
+	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), getAnimaItemCallbackPtr())
+}

@@ -5,15 +5,12 @@ import (
 	"unsafe"
 )
 
-// 动画项_置回调.
-//
-// hAnimationItem: 动画项句柄.
-//
-// callback: 回调函数.
-func XAnimaItem_SetCallback(hAnimationItem int, callback FunAnimationItem) {
-	ptr := syscall.NewCallback(callback)
-	finalCallbackPtr := createFloatCallback(ptr)
-	xAnimaItem_SetCallback.Call(uintptr(hAnimationItem), finalCallbackPtr)
+// getAnimaItemCallbackPtr 获取动画项回调函数指针
+func getAnimaItemCallbackPtr() uintptr {
+	animaItemCallbackOnce.Do(func() {
+		animaItemCallbackPtr = createFloatCallback(syscall.NewCallback(animaItemCallbackShell))
+	})
+	return animaItemCallbackPtr
 }
 
 // Windows API: VirtualAlloc
@@ -33,7 +30,7 @@ func createFloatCallback(targetFn uintptr) uintptr {
 	// 48 0F 7E CA  -> MOVD RDX, XMM1
 	// 49 BA [8字节地址] -> MOV R10, imm64
 	// 41 FF E2     -> JMP R10
-	
+
 	code := []byte{
 		// MOVD RDX, XMM1 (前缀)
 		0x66, 0x48, 0x0F, 0x7E, 0xCA,
