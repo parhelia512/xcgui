@@ -65,9 +65,7 @@ func main() {
 	w := window.NewByLayoutZipMem(qqmusic, "main.xml", "", 0, 0)
     
 	// songTitle 是在 main.xml 中给歌曲名(shapeText 组件)设置的 name 属性的值.
-	// 通过 GetObjectByName 可以获取布局文件中设置了 name 属性的组件的句柄.
-	// 可简化为: widget.NewShapeTextByName("songTitle").
-	song := widget.NewShapeTextByHandle(app.GetObjectByName("songTitle"))
+	song := widget.NewShapeTextByName("songTitle")
 	println(song.GetText()) // 输出: 两只老虎爱跳舞
     
 	// 调整布局

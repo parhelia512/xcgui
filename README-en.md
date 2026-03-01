@@ -64,9 +64,7 @@ func main() {
 	w := window.NewByLayoutZipMem(qqmusic, "main.xml", "", 0, 0)
     
 	// SongTitle is the value of the name property set for the song name (shapeText component) in main.xml.
-	// Through GetObjectByName, you can get the handle to the component with the name property set in the layout file..
-	// Can be simplified to: widget.NewShapeTextByName("songTitle").
-	song := widget.NewShapeTextByHandle(app.GetObjectByName("songTitle"))
+	song := widget.NewShapeTextByName("songTitle")
 	println(song.GetText()) // output: 两只老虎爱跳舞
     
 	// Adjust the layout
